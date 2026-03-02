@@ -1,5 +1,49 @@
 <!doctype html>
 <html>
+  <head>
+    <style>
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+      }
+
+      body {
+        display: grid;
+        place-items: center;
+        background: #111;
+        color: #fff;
+        font-family: sans-serif;
+      }
+
+      .app {
+        width: min(920px, 95vw);
+      }
+
+      .center {
+        place-items: center;
+      }
+
+      .camera-frame {
+        position: relative;
+        width: 640px;
+        height: 480px;
+      }
+
+      #video,
+      #overlay {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: fill;
+      }
+
+      #overlay {
+        pointer-events: none;
+      }
+    </style>
+  </head>
   <body>
     <main class="app">
       <section class="top">
@@ -7,13 +51,13 @@
         <p class="sub">Hold a handsign!</p>
       </section>
 
-      <section class="stage">
+      <section class="stage center">
         <div class="camera-frame">
           <video id="video" autoplay playsinline></video>
           <canvas id="overlay" width="640" height="480"></canvas>
         </div>
 
-        <div class="controls">
+        <div class="controls center">
           <button id="collectTarget">Collect TARGET</button>
           <button id="collectOther">Collect OTHER</button>
           <button id="stopCollect">Stop Collect</button>
@@ -25,6 +69,10 @@
       </section>
     </main>
 
-    <script type="module" src="./app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.15.0/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
+    <script type="module" src="./train.js"></script>
   </body>
 </html>
