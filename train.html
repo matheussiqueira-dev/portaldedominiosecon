@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+  <body>
+    <main class="app">
+      <section class="top">
+        <h2>Hand Sign Trainer</h2>
+        <p class="sub">Hold a handsign!</p>
+      </section>
+
+      <section class="stage">
+        <div class="camera-frame">
+          <video id="video" autoplay playsinline></video>
+          <canvas id="overlay" width="640" height="480"></canvas>
+        </div>
+
+        <div class="controls">
+          <button id="collectTarget">Collect TARGET</button>
+          <button id="collectOther">Collect OTHER</button>
+          <button id="stopCollect">Stop Collect</button>
+          <button id="train">Train</button>
+          <button id="predict">Start Predict</button>
+          <button id="saveModel">Save Model</button>
+        </div>
+        <p id="status">Status: idle</p>
+      </section>
+    </main>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
