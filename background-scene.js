@@ -33,6 +33,38 @@
       orbitControls.enabled = false;
     }
     const redCameraShake = new THREE.Vector3();
+    const postFxSupported = Boolean(
+      THREE.EffectComposer &&
+        THREE.RenderPass &&
+        THREE.UnrealBloomPass &&
+        THREE.ShaderPass &&
+        THREE.CopyShader &&
+        THREE.LuminosityHighPassShader,
+    );
+    let composer = null;
+    let bloomPass = null;
+    if (postFxSupported) {
+      composer = new THREE.EffectComposer(renderer);
+      composer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      composer.setSize(window.innerWidth, window.innerHeight);
+      const renderPass = new THREE.RenderPass(scene, camera3d);
+      bloomPass = new THREE.UnrealBloomPass(
+        new THREE.Vector2(window.innerWidth, window.innerHeight),
+        0,
+        0,
+        1,
+      );
+      composer.addPass(renderPass);
+      composer.addPass(bloomPass);
+    }
+
+    function setBloomProfile(strength, radius, threshold) {
+      if (!bloomPass) return;
+      bloomPass.strength = strength;
+      bloomPass.radius = radius;
+      bloomPass.threshold = threshold;
+    }
+    setBloomProfile(0, 0, 1);
 
     // --- Starfield Construction ---
     const positions = new Float32Array(STAR_COUNT * 3);
@@ -997,11 +1029,183 @@
     redCoreLight.visible = false;
     scene.add(redCoreLight);
 
+    // --- Mahoraga: Particle Dharma Chakra ---
+    const MAHORAGA_RIM_PARTICLES = 4600;
+    const MAHORAGA_HUB_PARTICLES = 2400;
+    const MAHORAGA_POINT_COUNT = 8;
+    const MAHORAGA_SPOKE_COUNT = MAHORAGA_POINT_COUNT;
+    const MAHORAGA_SPOKE_PARTICLES = 260;
+    const MAHORAGA_POINT_PARTICLES = 320;
+    const MAHORAGA_POINT_BALL_PARTICLES = 720;
+    const MAHORAGA_PARTICLE_COUNT =
+      MAHORAGA_RIM_PARTICLES +
+      MAHORAGA_HUB_PARTICLES +
+      MAHORAGA_SPOKE_COUNT * MAHORAGA_SPOKE_PARTICLES +
+      MAHORAGA_POINT_COUNT * MAHORAGA_POINT_PARTICLES +
+      MAHORAGA_POINT_COUNT * MAHORAGA_POINT_BALL_PARTICLES;
+    const MAHORAGA_RIM_RADIUS = 108;
+    const MAHORAGA_HUB_RADIUS = 20;
+    const MAHORAGA_POINT_LENGTH = 36;
+    const MAHORAGA_POINT_BALL_RADIUS = MAHORAGA_HUB_RADIUS;
+    const mahoragaBasePos = new Float32Array(MAHORAGA_PARTICLE_COUNT * 3);
+    const mahoragaPos = new Float32Array(MAHORAGA_PARTICLE_COUNT * 3);
+    const mahoragaJitterAmp = new Float32Array(MAHORAGA_PARTICLE_COUNT);
+    const mahoragaPhase = new Float32Array(MAHORAGA_PARTICLE_COUNT);
+    const mahoragaFreq = new Float32Array(MAHORAGA_PARTICLE_COUNT);
+
+    function setMahoragaParticle(index, x, y, z, ampMin, ampMax) {
+      const p = index * 3;
+      mahoragaBasePos[p] = x;
+      mahoragaBasePos[p + 1] = y;
+      mahoragaBasePos[p + 2] = z;
+      mahoragaPos[p] = x;
+      mahoragaPos[p + 1] = y;
+      mahoragaPos[p + 2] = z;
+      mahoragaJitterAmp[index] = ampMin + Math.random() * (ampMax - ampMin);
+      mahoragaPhase[index] = Math.random() * Math.PI * 2;
+      mahoragaFreq[index] = 0.7 + Math.random() * 1.8;
+    }
+
+    let mahoragaIndex = 0;
+    for (let i = 0; i < MAHORAGA_RIM_PARTICLES; i += 1) {
+      const angle = (i / MAHORAGA_RIM_PARTICLES) * Math.PI * 2 + (Math.random() - 0.5) * 0.01;
+      const radius = MAHORAGA_RIM_RADIUS + (Math.random() - 0.5) * 3.2;
+      setMahoragaParticle(
+        mahoragaIndex,
+        Math.cos(angle) * radius,
+        Math.sin(angle) * radius,
+        (Math.random() - 0.5) * 2.6,
+        0.14,
+        0.45,
+      );
+      mahoragaIndex += 1;
+    }
+
+    for (let i = 0; i < MAHORAGA_HUB_PARTICLES; i += 1) {
+      const angle = Math.random() * Math.PI * 2;
+      const radius = Math.sqrt(Math.random()) * MAHORAGA_HUB_RADIUS;
+      setMahoragaParticle(
+        mahoragaIndex,
+        Math.cos(angle) * radius,
+        Math.sin(angle) * radius,
+        (Math.random() - 0.5) * 3.2,
+        0.08,
+        0.32,
+      );
+      mahoragaIndex += 1;
+    }
+
+    for (let spoke = 0; spoke < MAHORAGA_SPOKE_COUNT; spoke += 1) {
+      const spokeAngle = (spoke / MAHORAGA_SPOKE_COUNT) * Math.PI * 2;
+      const cosA = Math.cos(spokeAngle);
+      const sinA = Math.sin(spokeAngle);
+      for (let i = 0; i < MAHORAGA_SPOKE_PARTICLES; i += 1) {
+        const t = i / (MAHORAGA_SPOKE_PARTICLES - 1);
+        const radius =
+          MAHORAGA_HUB_RADIUS +
+          6 +
+          t * (MAHORAGA_RIM_RADIUS - MAHORAGA_HUB_RADIUS - 10) +
+          (Math.random() - 0.5) * (0.9 + t * 1.2);
+        const lateral = (Math.random() - 0.5) * (0.24 + t * 0.9);
+        setMahoragaParticle(
+          mahoragaIndex,
+          cosA * radius - sinA * lateral,
+          sinA * radius + cosA * lateral,
+          (Math.random() - 0.5) * (0.8 + t * 1.2),
+          0.09,
+          0.38,
+        );
+        mahoragaIndex += 1;
+      }
+    }
+
+    for (let point = 0; point < MAHORAGA_POINT_COUNT; point += 1) {
+      const pointAngle = (point / MAHORAGA_POINT_COUNT) * Math.PI * 2;
+      const cosA = Math.cos(pointAngle);
+      const sinA = Math.sin(pointAngle);
+      const tipRadius = MAHORAGA_RIM_RADIUS + MAHORAGA_POINT_LENGTH;
+      const tipX = cosA * tipRadius;
+      const tipY = sinA * tipRadius;
+
+      for (let i = 0; i < MAHORAGA_POINT_PARTICLES; i += 1) {
+        const t = i / (MAHORAGA_POINT_PARTICLES - 1);
+        const radius = MAHORAGA_RIM_RADIUS - 2 + t * (MAHORAGA_POINT_LENGTH + 2);
+        const taper = 1 - t;
+        const lateral = (Math.random() - 0.5) * (1.4 + taper * 6.6);
+        setMahoragaParticle(
+          mahoragaIndex,
+          cosA * radius - sinA * lateral,
+          sinA * radius + cosA * lateral,
+          (Math.random() - 0.5) * (0.45 + taper * 0.95),
+          0.08,
+          0.3,
+        );
+        mahoragaIndex += 1;
+      }
+
+      for (let i = 0; i < MAHORAGA_POINT_BALL_PARTICLES; i += 1) {
+        const theta = Math.random() * Math.PI * 2;
+        const edgeBias = Math.random() < 0.4;
+        const radius = edgeBias
+          ? MAHORAGA_POINT_BALL_RADIUS * (0.82 + Math.random() * 0.18)
+          : Math.sqrt(Math.random()) * MAHORAGA_POINT_BALL_RADIUS * 0.84;
+        const depthScale = Math.max(0.04, 1 - radius / MAHORAGA_POINT_BALL_RADIUS);
+        setMahoragaParticle(
+          mahoragaIndex,
+          tipX + Math.cos(theta) * radius,
+          tipY + Math.sin(theta) * radius,
+          (Math.random() - 0.5) * MAHORAGA_POINT_BALL_RADIUS * depthScale * 0.42,
+          0.015,
+          0.075,
+        );
+        mahoragaIndex += 1;
+      }
+    }
+
+    const mahoragaGeo = new THREE.BufferGeometry();
+    const mahoragaPositionAttr = new THREE.BufferAttribute(mahoragaPos, 3);
+    mahoragaPositionAttr.setUsage(THREE.DynamicDrawUsage);
+    mahoragaGeo.setAttribute("position", mahoragaPositionAttr);
+
+    const mahoragaParticleCanvas = document.createElement("canvas");
+    mahoragaParticleCanvas.width = 128;
+    mahoragaParticleCanvas.height = 128;
+    const mahoragaParticleCtx = mahoragaParticleCanvas.getContext("2d");
+    const mahoragaParticleGrad = mahoragaParticleCtx.createRadialGradient(64, 64, 0, 64, 64, 64);
+    mahoragaParticleGrad.addColorStop(0, "rgba(255,255,255,1)");
+    mahoragaParticleGrad.addColorStop(0.45, "rgba(255,255,255,0.95)");
+    mahoragaParticleGrad.addColorStop(1, "rgba(255,255,255,0)");
+    mahoragaParticleCtx.fillStyle = mahoragaParticleGrad;
+    mahoragaParticleCtx.fillRect(0, 0, 128, 128);
+    const mahoragaParticleMap = new THREE.CanvasTexture(mahoragaParticleCanvas);
+    mahoragaParticleMap.minFilter = THREE.LinearFilter;
+    mahoragaParticleMap.magFilter = THREE.LinearFilter;
+
+    const mahoragaWheelMat = new THREE.PointsMaterial({
+      color: 0xffd700,
+      map: mahoragaParticleMap,
+      alphaTest: 0.04,
+      size: 1.1,
+      sizeAttenuation: true,
+      transparent: true,
+      opacity: 0,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
+    const mahoragaWheel = new THREE.Points(mahoragaGeo, mahoragaWheelMat);
+    mahoragaWheel.visible = false;
+    scene.add(mahoragaWheel);
+
+    const mahoragaAmbientLight = new THREE.AmbientLight(0x222222, 0.2);
+    mahoragaAmbientLight.visible = false;
+    scene.add(mahoragaAmbientLight);
+
     function enterInfiniteVoid() {
       if (orbitControls) orbitControls.enabled = false;
       stars.visible = true;
       radialGlow.visible = true;
       ringMesh.visible = true;
+      setBloomProfile(0.85, 0.55, 0.16);
     }
 
     function updateInfiniteVoid(t) {
@@ -1082,6 +1286,7 @@
       camera3d.position.copy(shrineCamBasePos);
       camera3d.lookAt(shrineCamTarget);
       shrineCamBaseQuat.copy(camera3d.quaternion);
+      setBloomProfile(0.75, 0.48, 0.24);
     }
 
     function updateShrine(t) {
@@ -1256,6 +1461,7 @@
         orbitControls.target.set(0, 0, 0);
         orbitControls.update();
       }
+      setBloomProfile(1.05, 0.62, 0.08);
     }
 
     function updateRed(t) {
@@ -1403,11 +1609,110 @@
       }
     }
 
+    function enterMahoraga() {
+      if (orbitControls) orbitControls.enabled = false;
+      stars.visible = false;
+      radialGlow.visible = false;
+      ringMesh.visible = false;
+      shrineAmbientLight.visible = false;
+      shrineDirectionalLight.visible = false;
+      shrineCoreLight.visible = false;
+      shrineFillLight.visible = false;
+      shrineGroup.visible = false;
+      shrineParticlePoints.visible = false;
+      shrineFloorBase.visible = false;
+      shrineSlashLines.visible = false;
+      shrineSlashBlades.visible = false;
+      shrineCorePoints.visible = false;
+      for (const ripple of shrineFloorRipples) {
+        ripple.visible = false;
+        ripple.material.opacity = 0;
+      }
+
+      redCorePoints.visible = false;
+      redContrailLines.visible = false;
+      redBurstPoints.visible = false;
+      redCoreLight.visible = false;
+      redContrailLines.rotation.set(0, 0, 0);
+      redBurstPoints.rotation.set(0, 0, 0);
+      camera3d.position.sub(redCameraShake);
+      redCameraShake.set(0, 0, 0);
+      for (const ring of redReverbRings) {
+        ring.visible = false;
+        ring.material.opacity = 0;
+      }
+
+      mahoragaAmbientLight.visible = true;
+      mahoragaWheel.visible = true;
+      mahoragaWheel.rotation.set(0, 0, 0);
+      mahoragaWheelMat.opacity = 0;
+      mahoragaWheelMat.size = 1.1;
+
+      renderer.setClearColor(0x000000, 1);
+      scene.fog.color.setHex(0x000000);
+      scene.fog.density = 0.0008;
+      camera3d.position.set(0, 0, 285);
+      camera3d.lookAt(0, 0, 0);
+      setBloomProfile(1.35, 0.72, 0.06);
+    }
+
+    function updateMahoraga(t) {
+      const radialStrength = 0.2 + detectMix * 0.68;
+      const swirlStrength = 0.12 + detectMix * 0.42;
+      const depthStrength = 0.08 + detectMix * 0.36;
+
+      for (let i = 0; i < MAHORAGA_PARTICLE_COUNT; i += 1) {
+        const p = i * 3;
+        const bx = mahoragaBasePos[p];
+        const by = mahoragaBasePos[p + 1];
+        const bz = mahoragaBasePos[p + 2];
+        const radius = Math.hypot(bx, by) || 1e-6;
+        const nx = bx / radius;
+        const ny = by / radius;
+        const tx = -ny;
+        const ty = nx;
+        const phase = mahoragaPhase[i];
+        const freq = mahoragaFreq[i];
+        const amp = mahoragaJitterAmp[i];
+
+        const radialOffset = Math.sin(t * freq * 2.2 + phase) * amp * radialStrength;
+        const tangentOffset = Math.cos(t * freq * 1.45 + phase * 1.7) * amp * swirlStrength;
+        const zOffset = Math.sin(t * freq * 2.8 + phase * 0.8) * amp * depthStrength;
+
+        mahoragaPos[p] = bx + nx * radialOffset + tx * tangentOffset;
+        mahoragaPos[p + 1] = by + ny * radialOffset + ty * tangentOffset;
+        mahoragaPos[p + 2] = bz + zOffset;
+      }
+      mahoragaGeo.attributes.position.needsUpdate = true;
+
+      mahoragaWheel.rotation.z -= 0.028;
+      mahoragaWheel.rotation.x = Math.sin(t * 0.35) * 0.09;
+      mahoragaWheel.rotation.y = Math.cos(t * 0.28) * 0.07;
+      mahoragaWheelMat.opacity = 0.5 + detectMix * 0.45;
+      mahoragaWheelMat.size = 1.1 + detectMix * 0.55;
+      mahoragaAmbientLight.intensity = 0.06 + detectMix * 0.25 + Math.sin(t * 1.9) * 0.015;
+      setBloomProfile(1.4 + detectMix * 1.25, 0.74, 0.02);
+    }
+
+    function exitMahoraga() {
+      mahoragaWheel.visible = false;
+      mahoragaWheel.rotation.set(0, 0, 0);
+      mahoragaWheelMat.opacity = 0;
+      mahoragaWheelMat.size = 1.1;
+      mahoragaAmbientLight.visible = false;
+      renderer.setClearColor(0x010206, 1);
+      scene.fog.color.setHex(0x010206);
+      scene.fog.density = 0.0012;
+      camera3d.position.set(0, 0, 0);
+      camera3d.rotation.set(0, 0, 0);
+      setBloomProfile(0, 0, 1);
+    }
+
     const backgroundAnimations = {
       infinite_void: { enter: enterInfiniteVoid, update: updateInfiniteVoid, exit: exitInfiniteVoid },
       shrine: { enter: enterShrine, update: updateShrine, exit: exitShrine },
       red: { enter: enterRed, update: updateRed, exit: exitRed },
-      mahoraga: { enter: () => {}, update: () => {}, exit: () => {} },
+      mahoraga: { enter: enterMahoraga, update: updateMahoraga, exit: exitMahoraga },
     };
 
     function setSign(signName) {
@@ -1451,8 +1756,18 @@
       camera3d.aspect = window.innerWidth / window.innerHeight;
       camera3d.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
+      if (composer) composer.setSize(window.innerWidth, window.innerHeight);
+      if (bloomPass) bloomPass.setSize(window.innerWidth, window.innerHeight);
     }
     window.addEventListener("resize", onResize);
+
+    function renderScene() {
+      if (composer) {
+        composer.render();
+      } else {
+        renderer.render(scene, camera3d);
+      }
+    }
 
     const clock = new THREE.Clock();
     function animate() {
@@ -1465,13 +1780,13 @@
           backgroundAnimations[activeSign].update(t);
         }
         updateSignTransition();
-        renderer.render(scene, camera3d);
+        renderScene();
         return;
       }
 
       if (detectMix > 0.001 && activeSign) {
         backgroundAnimations[activeSign].update(t);
-        renderer.render(scene, camera3d);
+        renderScene();
       } else {
         renderer.clear();
       }

@@ -7,12 +7,14 @@ const drawConnectors = globalThis.drawConnectors;
 const drawLandmarks = globalThis.drawLandmarks;
 const HAND_CONNECTIONS = globalThis.HAND_CONNECTIONS;
 
-const CLASS_LABELS = [
+const BASE_CLASS_LABELS = [
   "infinite_void",
   "shrine",
   "red",
   "mahoraga",
 ];
+const OTHER_LABEL = "other";
+const CLASS_LABELS = BASE_CLASS_LABELS.concat(OTHER_LABEL);
 const CLASS_INDEX = Object.fromEntries(CLASS_LABELS.map((name, i) => [name, i]));
 
 let collectingClass = null; // class label string | null
@@ -150,7 +152,7 @@ if (collectClassBtn && classSelect) {
 const collectTargetBtn = document.getElementById("collectTarget");
 const collectOtherBtn = document.getElementById("collectOther");
 if (collectTargetBtn) collectTargetBtn.onclick = () => { collectingClass = CLASS_LABELS[0]; };
-if (collectOtherBtn) collectOtherBtn.onclick = () => { collectingClass = "other"; };
+if (collectOtherBtn) collectOtherBtn.onclick = () => { collectingClass = OTHER_LABEL; };
 
 document.getElementById("stopCollect").onclick = () => {
   collectingClass = null;

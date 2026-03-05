@@ -35,7 +35,7 @@
     // Map model output index -> sign label. Keep this order aligned with training.
     const CLASS_LABELS = ["infinite_void", "shrine", "red", "mahoraga"];
     // Signs that currently drive a full background animation.
-    const ANIMATED_SIGNS = new Set(["infinite_void", "shrine", "red"]);
+    const ANIMATED_SIGNS = new Set(["infinite_void", "shrine", "red", "mahoraga"]);
     const CONF_THRESHOLD = 0.9;
     const REQUIRED_STREAK = 4;
     // Per-class leniency: Infinite Void can pass with lower confidence/fewer consecutive frames.
