@@ -33,11 +33,15 @@
     const ctx = canvas.getContext("2d");
 
     // Map model output index -> sign label. Keep this order aligned with training.
-    const CLASS_LABELS = ["infinite_void", "shrine", "red", "mahoraga"];
+    const OTHER_LABEL = "other";
+    const CLASS_LABELS = ["infinite_void", "shrine", "red", "mahoraga", OTHER_LABEL];
+    const OTHER_INDEX = CLASS_LABELS.indexOf(OTHER_LABEL);
     // Signs that currently drive a full background animation.
     const ANIMATED_SIGNS = new Set(["infinite_void", "shrine", "red", "mahoraga"]);
     const CONF_THRESHOLD = 0.9;
     const REQUIRED_STREAK = 4;
+    const MIN_MARGIN_TOP2 = 0.12;
+    const MIN_MARGIN_OVER_OTHER = 0.08;
     // Per-class leniency: Infinite Void can pass with lower confidence/fewer consecutive frames.
     const CLASS_CONF_THRESHOLD = {
       infinite_void: 0.8,
@@ -48,6 +52,7 @@
     let streak = 0;
     let streakLabel = null;
     let activeLabel = null;
+    let warnedClassCountMismatch = false;
 
     // Single bridge from ML prediction layer to background system.
     function setDetectionState(label) {
@@ -123,17 +128,55 @@
 
       let predictedLabel = CLASS_LABELS[0];
       let score = probs[0];
+      let secondScore = 0;
+      let predictedIndex = 0;
 
       // Supports current single-output model and future multiclass outputs.
       if (probs.length > 1) {
         let maxIdx = 0;
+        let secondIdx = -1;
         for (let i = 1; i < probs.length; i += 1) {
           if (probs[i] > probs[maxIdx]) {
+            secondIdx = maxIdx;
             maxIdx = i;
+          } else if (secondIdx === -1 || probs[i] > probs[secondIdx]) {
+            secondIdx = i;
           }
         }
+        predictedIndex = maxIdx;
         predictedLabel = CLASS_LABELS[maxIdx] || "class_" + maxIdx;
         score = probs[maxIdx];
+        secondScore = secondIdx >= 0 ? probs[secondIdx] : 0;
+      }
+
+      if (!warnedClassCountMismatch && probs.length !== CLASS_LABELS.length) {
+        warnedClassCountMismatch = true;
+        console.warn(
+          "Model output class count (" +
+            probs.length +
+            ") does not match CLASS_LABELS (" +
+            CLASS_LABELS.length +
+            ").",
+        );
+      }
+
+      const otherScore =
+        OTHER_INDEX >= 0 && OTHER_INDEX < probs.length ? probs[OTHER_INDEX] : 0;
+      const marginToSecond = score - secondScore;
+      const marginToOther = score - otherScore;
+
+      // Never animate for non-domain or ambiguous classes: clear scene immediately.
+      const isOtherLike =
+        predictedLabel === OTHER_LABEL ||
+        predictedLabel.startsWith("class_") ||
+        marginToSecond < MIN_MARGIN_TOP2 ||
+        (predictedIndex !== OTHER_INDEX && marginToOther < MIN_MARGIN_OVER_OTHER);
+      if (isOtherLike) {
+        streak = 0;
+        streakLabel = null;
+        setDetectionState(null);
+        setStatus("OTHER " + score.toFixed(3));
+        return;
       }
 
       const confThreshold = CLASS_CONF_THRESHOLD[predictedLabel] ?? CONF_THRESHOLD;
