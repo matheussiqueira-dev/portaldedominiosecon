@@ -9,8 +9,8 @@
       subtitle: "Resposta imersiva",
       description:
         "Ativa o cenario mais estavel do projeto e costuma exigir menos quadros consecutivos.",
-      accent: "#58a303",
-      lightAccent: "rgba(88, 163, 3, 0.16)",
+      accent: "#00E5FF",
+      lightAccent: "rgba(0, 229, 255, 0.12)",
       animated: true,
     },
     shrine: {
@@ -20,8 +20,8 @@
       subtitle: "Energia cortante",
       description:
         "Dispara o dominio com particulas vermelhas e leitura orientada para cortes no ambiente.",
-      accent: "#cf2e2e",
-      lightAccent: "rgba(207, 46, 46, 0.14)",
+      accent: "#00B8D9",
+      lightAccent: "rgba(0, 184, 217, 0.12)",
       animated: true,
     },
     red: {
@@ -31,8 +31,8 @@
       subtitle: "Pressao concentrada",
       description:
         "Aplica o efeito de nucleo energetico com vibracao visual e resposta forte no fundo 3D.",
-      accent: "#ff6900",
-      lightAccent: "rgba(255, 105, 0, 0.14)",
+      accent: "#33F3FF",
+      lightAccent: "rgba(51, 243, 255, 0.12)",
       animated: true,
     },
     mahoraga: {
@@ -42,8 +42,8 @@
       subtitle: "Rotacao adaptativa",
       description:
         "Mostra o dominio com roda adaptativa e leitura de presenca mais ritualistica.",
-      accent: "#fcb900",
-      lightAccent: "rgba(252, 185, 0, 0.16)",
+      accent: "#00FFFF",
+      lightAccent: "rgba(0, 255, 255, 0.12)",
       animated: true,
     },
     other: {
@@ -53,8 +53,8 @@
       subtitle: "Sem ativacao",
       description:
         "Classe de seguranca usada quando o gesto nao e reconhecido com confianca suficiente.",
-      accent: "#7b8b70",
-      lightAccent: "rgba(123, 139, 112, 0.14)",
+      accent: "#8FA6B2",
+      lightAccent: "rgba(143, 166, 178, 0.12)",
       animated: false,
     },
   };
@@ -79,8 +79,8 @@
         shortLabel: key || "Desconhecido",
         subtitle: "Sem metadados",
         description: "Classe sem descricao cadastrada.",
-        accent: "#7b8b70",
-        lightAccent: "rgba(123, 139, 112, 0.14)",
+        accent: "#8FA6B2",
+        lightAccent: "rgba(143, 166, 178, 0.12)",
         animated: false,
       }
     );

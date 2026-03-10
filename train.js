@@ -281,7 +281,7 @@ function updatePredictionPanel(probabilities, activeLabel) {
     rowRef.valueEl.textContent = Math.round(value * 100) + "%";
     rowRef.fillEl.style.width = Math.round(value * 100) + "%";
     rowRef.row.style.borderColor =
-      label === activeLabel ? "rgba(88, 163, 3, 0.28)" : "rgba(69, 88, 50, 0.08)";
+      label === activeLabel ? "rgba(0, 229, 255, 0.28)" : "rgba(143, 166, 178, 0.12)";
   }
 }
 
@@ -516,11 +516,11 @@ hands.onResults((results) => {
   if (state.showLandmarks && landmarks.length) {
     for (const handLandmarks of landmarks) {
       drawConnectors(ctx, handLandmarks, HAND_CONNECTIONS, {
-        color: "#58a303",
+        color: "#00E5FF",
         lineWidth: 2,
       });
       drawLandmarks(ctx, handLandmarks, {
-        color: "#ff6900",
+        color: "#33F3FF",
         lineWidth: 1,
         radius: 3,
       });

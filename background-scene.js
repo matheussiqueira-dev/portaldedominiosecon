@@ -4,22 +4,36 @@
     if (!bgRoot) throw new Error("Missing #bg3d container.");
     if (!window.THREE) throw new Error("Three.js was not loaded.");
 
+    function getViewportSize() {
+      const rect = bgRoot.getBoundingClientRect();
+      return {
+        width: Math.max(1, Math.floor(rect.width || bgRoot.clientWidth || window.innerWidth)),
+        height: Math.max(1, Math.floor(rect.height || bgRoot.clientHeight || window.innerHeight)),
+      };
+    }
+
     // Configuration
     const STAR_COUNT = 20000;
     const CYLINDER_RADIUS = 300;
     const CYLINDER_DEPTH = 4500;
     const WRAP_NEAR_Z = 100;
+    const initialSize = getViewportSize();
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setSize(initialSize.width, initialSize.height);
     renderer.setClearColor(0x010206, 1);
     bgRoot.appendChild(renderer.domElement);
 
     const scene = new THREE.Scene();
     scene.fog = new THREE.FogExp2(0x010206, 0.0012);
 
-    const camera3d = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 8000);
+    const camera3d = new THREE.PerspectiveCamera(
+      75,
+      initialSize.width / initialSize.height,
+      0.1,
+      8000,
+    );
     camera3d.position.z = 0;
     const orbitControls =
       THREE.OrbitControls ? new THREE.OrbitControls(camera3d, renderer.domElement) : null;
@@ -46,10 +60,10 @@
     if (postFxSupported) {
       composer = new THREE.EffectComposer(renderer);
       composer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-      composer.setSize(window.innerWidth, window.innerHeight);
+      composer.setSize(initialSize.width, initialSize.height);
       const renderPass = new THREE.RenderPass(scene, camera3d);
       bloomPass = new THREE.UnrealBloomPass(
-        new THREE.Vector2(window.innerWidth, window.innerHeight),
+        new THREE.Vector2(initialSize.width, initialSize.height),
         0,
         0,
         1,
@@ -1753,13 +1767,18 @@
     }
 
     function onResize() {
-      camera3d.aspect = window.innerWidth / window.innerHeight;
+      const nextSize = getViewportSize();
+      camera3d.aspect = nextSize.width / nextSize.height;
       camera3d.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      if (composer) composer.setSize(window.innerWidth, window.innerHeight);
-      if (bloomPass) bloomPass.setSize(window.innerWidth, window.innerHeight);
+      renderer.setSize(nextSize.width, nextSize.height);
+      if (composer) composer.setSize(nextSize.width, nextSize.height);
+      if (bloomPass) bloomPass.setSize(nextSize.width, nextSize.height);
     }
     window.addEventListener("resize", onResize);
+    if (window.ResizeObserver) {
+      const resizeObserver = new ResizeObserver(onResize);
+      resizeObserver.observe(bgRoot);
+    }
 
     function renderScene() {
       if (composer) {

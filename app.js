@@ -225,8 +225,8 @@
 
         if (!meta.animated) {
           cardRef.countEl.textContent = "Sem animacao";
-          cardRef.countEl.style.background = "rgba(123, 139, 112, 0.22)";
-          cardRef.countEl.style.color = "#435140";
+          cardRef.countEl.style.background = "rgba(143, 166, 178, 0.14)";
+          cardRef.countEl.style.color = "#E6FFFF";
           continue;
         }
 
@@ -266,7 +266,7 @@
         subtitle ||
         (meta ? meta.description : "Posicione as duas maos dentro do quadro para iniciar.");
       activeSignalBadgeEl.textContent = badgeText || "Pronto";
-      activeSignalBadgeEl.style.background = accent || (meta ? meta.accent : "#7b8b70");
+      activeSignalBadgeEl.style.background = accent || (meta ? meta.accent : "#8FA6B2");
     }
 
     function applyCameraMode() {
@@ -325,7 +325,7 @@
       state.recentDetections = [];
       state.detectionCounts = Object.fromEntries(CLASS_LABELS.map((label) => [label, 0]));
       handsVisibleEl.textContent = "0";
-      updateFocusPanel(null, null, "Pronto", "#7b8b70");
+      updateFocusPanel(null, null, "Pronto", "#8FA6B2");
       renderConfidenceValues(Object.fromEntries(CLASS_LABELS.map((label) => [label, 0])), null);
       updateSessionMetrics();
       setStatus("Monitoramento limpo. Aguardando novo gesto.", "neutral");
@@ -359,7 +359,7 @@
     renderSignalCards();
     renderHistory();
     applyCameraMode();
-    updateFocusPanel(null, null, "Pronto", "#7b8b70");
+    updateFocusPanel(null, null, "Pronto", "#8FA6B2");
     updateSessionMetrics();
 
     ui.sessionTimerId = window.setInterval(() => {
@@ -431,11 +431,11 @@
       if (state.showLandmarks && landmarks.length) {
         for (const handLandmarks of landmarks) {
           drawConnectors(ctx, handLandmarks, HAND_CONNECTIONS, {
-            color: "#58a303",
+            color: "#00E5FF",
             lineWidth: 2,
           });
           drawLandmarks(ctx, handLandmarks, {
-            color: "#ff6900",
+            color: "#33F3FF",
             lineWidth: 1,
             radius: 3,
           });
@@ -451,7 +451,7 @@
           null,
           "Nenhuma mao detectada. Reposicione as duas maos dentro do quadro.",
           "Sem leitura",
-          "#7b8b70",
+          "#8FA6B2",
         );
         setStatus("Sem maos no enquadramento.", "warning");
         return;
@@ -468,7 +468,7 @@
         state.streakLabel = null;
         renderConfidenceValues(Object.fromEntries(CLASS_LABELS.map((label) => [label, 0])), null);
         setDetectionState(null, 0);
-        updateFocusPanel(null, "Nao foi possivel inferir o gesto atual.", "Erro", "#cf2e2e");
+        updateFocusPanel(null, "Nao foi possivel inferir o gesto atual.", "Erro", "#00B8D9");
         setStatus("Falha de inferencia no quadro atual.", "error");
         return;
       }

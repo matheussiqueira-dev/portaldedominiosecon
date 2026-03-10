@@ -1,11 +1,12 @@
-# Portal de Dominios ECON
+# ENCOM Gesture Console
 
-Aplicacao web para reconhecimento de sinais de mao inspirados em *Jujutsu Kaisen*, com deteccao em tempo real pela webcam, animacoes 3D e um layout em portugues baseado na linguagem visual da ECON.
+Aplicacao web para reconhecimento de sinais de mao inspirados em *Jujutsu Kaisen*, com deteccao em tempo real pela webcam, animacoes 3D e interface futurista no padrao ENCOM.
 
 ## O que mudou
 
 - Interface principal traduzida para portugues.
-- Novo visual corporativo com paleta, blocos e CTAs inspirados na ECON.
+- Novo visual ENCOM inspirado em Tron Legacy, com neon azul, paineis holograficos e grid animado.
+- Separacao fisica entre o frame de efeitos especiais 3D e o frame de captura da webcam.
 - Painel operacional com:
   - barras de confianca por classe
   - historico recente de ativacoes
@@ -28,7 +29,7 @@ Aplicacao web para reconhecimento de sinais de mao inspirados em *Jujutsu Kaisen
 
 ## Estrutura principal
 
-- `index.html`: portal principal com monitoramento e visual ECON
+- `index.html`: console principal com frames separados para FX e webcam
 - `styles.css`: estilos da interface principal
 - `app.js`: loop de inferencia, atualizacao de UI e controles da sessao
 - `train.html`: treinador visual em portugues
@@ -37,6 +38,9 @@ Aplicacao web para reconhecimento de sinais de mao inspirados em *Jujutsu Kaisen
 - `sign-config.js`: labels, descricoes e metadados compartilhados dos sinais
 - `background-scene.js`: efeitos e transicoes do ambiente 3D
 - `hand-features.js`: extracao de features a partir dos pontos rastreados das maos
+- `styles/encom-theme.css`: tema global ENCOM
+- `ui-system.js`: footer global e botao flutuante do WhatsApp
+- `vercel.json`: configuracao de deploy para Vercel
 
 ## Como usar
 
@@ -60,6 +64,21 @@ Aplicacao web para reconhecimento de sinais de mao inspirados em *Jujutsu Kaisen
 ## Observacao
 
 O projeto continua 100% client-side. Para a webcam funcionar corretamente, use `localhost` ou HTTPS.
+
+## Deploy na Vercel
+
+1. Importe o repositorio na Vercel.
+2. Use o preset `Other`.
+3. Nao configure comando de build.
+4. Nao configure diretoria de output.
+5. Publique normalmente; a Vercel servira os arquivos estaticos da raiz.
+
+Rotas configuradas:
+
+- `/` -> `index.html`
+- `/train` -> `train.html`
+
+O arquivo `vercel.json` ja inclui rewrite para a tela de treino e headers para revalidacao dos assets principais.
 
 ## Autoria
 

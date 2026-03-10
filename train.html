@@ -3,66 +3,63 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Treinador de Gestos ECON</title>
+    <title>ENCOM Training Console</title>
     <meta
       name="description"
-      content="Painel em portugues para coletar amostras, treinar o classificador de gestos e exportar um novo modelo TensorFlow.js."
+      content="Console futurista para coleta de amostras, treino e validacao do classificador de gestos."
     />
     <link rel="stylesheet" href="./train.css" />
   </head>
   <body>
-    <main class="train-shell">
-      <header class="topbar">
-        <div class="brand">
-          <div class="brand-mark" aria-hidden="true">EC</div>
+    <main class="page-shell train-shell">
+      <header class="topbar encom-panel scan-panel fade-in">
+        <div class="brand-block">
+          <div class="brand-mark" aria-hidden="true">TR</div>
           <div class="brand-copy">
-            <strong>Treinador de Gestos ECON</strong>
-            <span>Coleta, treinamento e validacao ao vivo do classificador em navegador.</span>
+            <strong>ENCOM Training Console</strong>
+            <span>Coleta de amostras, treino TensorFlow.js e validacao visual em tempo real.</span>
           </div>
         </div>
 
-        <div class="topbar-actions">
-          <a class="button-link secondary" href="./index.html">Voltar ao monitor</a>
-          <button class="button-action primary" id="train" type="button">Treinar modelo</button>
+        <div class="button-row">
+          <a class="tron-button is-muted" href="/">Voltar ao monitor</a>
+          <button class="tron-button is-solid" id="train" type="button">Treinar modelo</button>
         </div>
       </header>
 
-      <section class="hero-card">
-        <small>Fluxo de treinamento</small>
-        <h1>Monte uma base equilibrada, acompanhe as metricas e salve um modelo pronto para producao.</h1>
+      <section class="hero-panel encom-panel tron-card scan-panel fade-in">
+        <span class="eyebrow">TRAINING PIPELINE</span>
+        <h1>Construa uma base equilibrada, acompanhe as metricas e exporte um modelo pronto para validacao.</h1>
         <p>
-          Esta pagina foi traduzida para portugues e ganhou um dashboard operacional para mostrar
-          distribuicao de amostras, meta minima por classe, progresso do treino e probabilidades em
-          tempo real durante a validacao.
+          O treinador acompanha o novo sistema ENCOM, preserva a logica atual do classificador e
+          organiza coleta, treino e previsao em uma malha operacional limpa para desktop e mobile.
         </p>
 
         <div class="hero-metrics">
-          <article class="metric-card">
+          <article class="metric-box">
             <span>Total de amostras</span>
             <strong id="datasetTotal">0</strong>
           </article>
-          <article class="metric-card">
+          <article class="metric-box">
             <span>Classe ativa</span>
             <strong id="selectedClassLabel">Vazio Infinito</strong>
           </article>
-          <article class="metric-card">
+          <article class="metric-box">
             <span>Modo atual</span>
             <strong id="modeLabel">Ocioso</strong>
           </article>
-          <article class="metric-card">
+          <article class="metric-box">
             <span>Status rapido</span>
             <strong id="trainingQuickStatus">Base em construcao</strong>
           </article>
         </div>
       </section>
 
-      <section class="workspace">
-        <section class="camera-panel">
+      <section class="workspace-grid">
+        <article class="camera-panel encom-panel tron-card scan-panel fade-in">
+          <span class="eyebrow">CAPTURE FRAME</span>
           <h2>Coleta e previsao</h2>
-          <p>
-            Use a camera para gravar amostras por classe, validar o modelo treinado e ajustar a
-            base antes de exportar.
-          </p>
+          <p>Grave amostras por classe e valide o comportamento do modelo no mesmo frame de captura.</p>
 
           <div class="status-pill" id="statusBadge" data-tone="neutral">
             <span id="status">Inicializando modulo de camera...</span>
@@ -76,90 +73,94 @@
           <div class="control-row">
             <label for="classSelect">Classe de coleta</label>
             <select id="classSelect"></select>
-            <button class="button-action primary" id="collectClass" type="button">Iniciar coleta</button>
-            <button class="button-action secondary" id="stopCollect" type="button">Parar coleta</button>
+            <button class="tron-button is-solid" id="collectClass" type="button">Iniciar coleta</button>
+            <button class="tron-button is-muted" id="stopCollect" type="button">Parar coleta</button>
           </div>
 
           <div class="secondary-actions">
-            <button class="button-action secondary" id="predict" type="button" aria-pressed="false">
+            <button class="tron-button is-muted" id="predict" type="button" aria-pressed="false">
               Iniciar previsao
             </button>
-            <button class="button-action secondary" id="toggleMirror" type="button" aria-pressed="true">
+            <button class="tron-button is-muted" id="toggleMirror" type="button" aria-pressed="true">
               Desespelhar camera
             </button>
-            <button class="button-action secondary" id="toggleLandmarks" type="button" aria-pressed="true">
+            <button class="tron-button is-muted" id="toggleLandmarks" type="button" aria-pressed="true">
               Ocultar pontos
             </button>
-            <button class="button-action warning" id="resetClass" type="button">Resetar classe</button>
-            <button class="button-action danger" id="clearDataset" type="button">Limpar base</button>
-            <button class="button-action secondary" id="saveModel" type="button">Salvar modelo</button>
+            <button class="tron-button is-alert" id="resetClass" type="button">Resetar classe</button>
+            <button class="tron-button is-alert" id="clearDataset" type="button">Limpar base</button>
+            <button class="tron-button" id="saveModel" type="button">Salvar modelo</button>
           </div>
-        </section>
+        </article>
 
-        <div class="stack">
-          <section class="panel">
-            <h3>Resumo da base</h3>
+        <div class="stack-grid">
+          <section class="summary-panel encom-panel scan-panel fade-in">
+            <span class="eyebrow">DATASET STATUS</span>
+            <h2>Resumo da base</h2>
             <div class="summary-grid">
-              <article class="summary-box">
-                <span>Amostras por meta minima</span>
+              <article class="data-box">
+                <span>Meta minima</span>
                 <strong id="goalStatus">0/5 classes prontas</strong>
               </article>
-              <article class="summary-box">
+              <article class="data-box">
                 <span>Ultima previsao</span>
                 <strong id="predictionHeadline">Sem previsao</strong>
               </article>
-              <article class="summary-box">
+              <article class="data-box">
                 <span>Epoch atual</span>
                 <strong id="epochValue">-</strong>
               </article>
-              <article class="summary-box">
-                <span>Acuracia de validacao</span>
+              <article class="data-box">
+                <span>Acuracia validacao</span>
                 <strong id="valAccuracyValue">-</strong>
               </article>
             </div>
           </section>
 
-          <section class="panel">
-            <h3>Distribuicao por classe</h3>
+          <section class="dataset-panel encom-panel scan-panel fade-in">
+            <span class="eyebrow">SAMPLE DISTRIBUTION</span>
+            <h2>Distribuicao por classe</h2>
             <div class="dataset-list" id="datasetList"></div>
           </section>
 
-          <section class="panel">
-            <h3>Metricas do treino</h3>
-            <div class="metrics-list">
-              <article class="metrics-box">
+          <section class="metrics-panel encom-panel scan-panel fade-in">
+            <span class="eyebrow">TRAINING METRICS</span>
+            <h2>Metricas do treino</h2>
+            <div class="metrics-grid">
+              <article class="data-box">
                 <span>Acuracia</span>
                 <strong id="accuracyValue">-</strong>
               </article>
-              <article class="metrics-box">
+              <article class="data-box">
                 <span>Loss</span>
                 <strong id="lossValue">-</strong>
               </article>
-              <article class="metrics-box">
+              <article class="data-box">
                 <span>Validacao</span>
                 <strong id="validationValue">-</strong>
               </article>
-              <article class="metrics-box">
+              <article class="data-box">
                 <span>Loss validacao</span>
                 <strong id="valLossValue">-</strong>
               </article>
             </div>
           </section>
 
-          <section class="panel">
-            <h3>Probabilidades em tempo real</h3>
+          <section class="prediction-panel encom-panel scan-panel fade-in">
+            <span class="eyebrow">LIVE PROBABILITIES</span>
+            <h2>Probabilidades em tempo real</h2>
             <div class="prediction-list" id="predictionList"></div>
           </section>
         </div>
       </section>
 
-      <section class="guide-section">
+      <section class="prediction-panel encom-panel scan-panel fade-in">
+        <span class="eyebrow">SIGN REFERENCES</span>
+        <h2>Guia de classes</h2>
         <div class="guide-grid" id="classGuide"></div>
-        <p class="footer-note">
-          Mantenha as classes equilibradas antes de treinar. O modelo exportado continua no formato
-          TensorFlow.js e substitui os arquivos da raiz quando aprovado.
-        </p>
       </section>
+
+      <p class="footer-note">Painel de treino integrado ao tema ENCOM e pronto para demonstracao visual consistente.</p>
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.15.0/dist/tf.min.js"></script>
@@ -169,5 +170,6 @@
     <script src="./sign-config.js"></script>
     <script src="./hand-features.js"></script>
     <script type="module" src="./train.js"></script>
+    <script src="./ui-system.js"></script>
   </body>
 </html>
