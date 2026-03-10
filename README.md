@@ -1,43 +1,66 @@
-﻿# Domain Expansion (Jujutsu Kaisen Hands)
+# Portal de Dominios ECON
 
-Domain Expansion is a browser-based hand sign recognition project that detects Jujutsu Kaisen inspired gestures from a webcam feed and triggers real-time 3D background animations.
+Aplicacao web para reconhecimento de sinais de mao inspirados em *Jujutsu Kaisen*, com deteccao em tempo real pela webcam, animacoes 3D e um layout em portugues baseado na linguagem visual da ECON.
 
-## Technologies Used
+## O que mudou
 
-- HTML/CSS + vanilla JavaScript
-- [MediaPipe Hands](https://developers.google.com/mediapipe) for 2-hand landmark tracking
-- [TensorFlow.js](https://www.tensorflow.org/js) for training and running the gesture classifier in-browser
-- [Three.js](https://threejs.org/) for visual effects and animated domain scenes
-- Saved model assets: `hand-sign-model.json` + `hand-sign-model.weights.bin`
+- Interface principal traduzida para portugues.
+- Novo visual corporativo com paleta, blocos e CTAs inspirados na ECON.
+- Painel operacional com:
+  - barras de confianca por classe
+  - historico recente de ativacoes
+  - contadores por sinal durante a sessao
+  - controles de camera para espelhamento e exibicao dos pontos rastreados
+- Treinador reformulado com:
+  - dashboard de distribuicao das amostras
+  - metricas de treino e validacao
+  - previsao ao vivo por classe
+  - reset da classe selecionada
+  - limpeza completa da base antes de novo treino
+- Configuracao compartilhada dos sinais em `sign-config.js`.
 
-## How I Trained It
+## Tecnologias
 
-1. Open `train.html`.
-2. Choose a class from the dropdown (`infinite_void`, `shrine`, `red`, `mahoraga`, `other`).
-3. Click **Collect Class** and record samples for each class.
-4. Repeat until data is balanced (the trainer enforces at least 30 samples per class and 100+ total samples).
-5. Click **Train** (current setup: 20 epochs, batch size 32, validation split 0.2).
-6. Click **Start Predict** to validate predictions live.
-7. Click **Save Model** to download the trained TensorFlow.js model files.
-8. Replace the root `hand-sign-model.json` and `hand-sign-model.weights.bin` with your new exported files.
+- HTML, CSS e JavaScript puro
+- [MediaPipe Hands](https://developers.google.com/mediapipe) para rastreamento de ate duas maos
+- [TensorFlow.js](https://www.tensorflow.org/js) para treinamento e inferencia no navegador
+- [Three.js](https://threejs.org/) para os fundos 3D animados
 
-## How to Use
+## Estrutura principal
 
-1. Run a local web server in this folder (camera APIs work best on `localhost` or HTTPS).
-2. Open `index.html` from that local server.
-3. Allow webcam access.
-4. Perform one of the trained hand signs in view of the camera.
-5. When confidence and streak thresholds are met, the matching domain animation activates.
-6. If the gesture is uncertain or mapped to `other`, the scene clears.
+- `index.html`: portal principal com monitoramento e visual ECON
+- `styles.css`: estilos da interface principal
+- `app.js`: loop de inferencia, atualizacao de UI e controles da sessao
+- `train.html`: treinador visual em portugues
+- `train.css`: estilos do treinador
+- `train.js`: coleta de amostras, treino, previsao e exportacao do modelo
+- `sign-config.js`: labels, descricoes e metadados compartilhados dos sinais
+- `background-scene.js`: efeitos e transicoes do ambiente 3D
+- `hand-features.js`: extracao de features a partir dos pontos rastreados das maos
 
-## Main Files
+## Como usar
 
-- `index.html`: main app UI and script loading
-- `app.js`: camera loop, hand tracking, model inference, sign gating
-- `background-scene.js`: Three.js domain animations and transitions
-- `hand-features.js`: shared hand feature extraction helpers
-- `train.html` + `train.js`: data collection and model training tool
+1. Rode um servidor local na pasta do projeto.
+2. Abra `index.html` para usar o monitor principal.
+3. Permita acesso a webcam.
+4. Execute os gestos com as duas maos visiveis no quadro.
+5. Acompanhe barras de confianca, historico e sinal ativo.
 
-## Credits
+## Como treinar um novo modelo
 
-Animations and visual behavior were powered by **Gemini 3** and **Codex**.
+1. Abra `train.html`.
+2. Escolha a classe no seletor.
+3. Clique em **Iniciar coleta** e grave amostras equilibradas.
+4. Repita o processo ate atingir pelo menos 30 amostras por classe e 100 no total.
+5. Clique em **Treinar modelo**.
+6. Use **Iniciar previsao** para validar o resultado ao vivo.
+7. Clique em **Salvar modelo** para baixar os arquivos TensorFlow.js.
+8. Substitua `hand-sign-model.json` e `hand-sign-model.weights.bin` na raiz pelos arquivos aprovados.
+
+## Observacao
+
+O projeto continua 100% client-side. Para a webcam funcionar corretamente, use `localhost` ou HTTPS.
+
+## Autoria
+
+Projeto atribuido a Matheus Siqueira.

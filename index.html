@@ -1,91 +1,228 @@
 <!doctype html>
-<html lang="en">
+<html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Jujutsu Kaisen Hands</title>
-    <style>
-      html,
-      body {
-        margin: 0;
-        height: 100%;
-        background: #0f1115;
-        color: #e8eef8;
-        font-family: Arial, sans-serif;
-        overflow: hidden;
-      }
-
-      #bg3d {
-        position: fixed;
-        inset: 0;
-        z-index: 0;
-      }
-
-      .app {
-        position: fixed;
-        top: 16px;
-        left: 16px;
-        z-index: 3;
-        padding: 12px 14px;
-        border-radius: 10px;
-        background: rgba(15, 17, 21, 0.55);
-        backdrop-filter: blur(3px);
-      }
-
-      .app h2 {
-        margin: 0 0 8px;
-      }
-
-      #status {
-        margin: 0;
-      }
-
-      .camera-frame {
-        position: fixed;
-        right: 16px;
-        bottom: 16px;
-        width: min(38vw, 420px);
-        aspect-ratio: 4 / 3;
-        border-radius: 12px;
-        overflow: hidden;
-        border: 1px solid rgba(232, 238, 248, 0.22);
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-        z-index: 4;
-        background: #000;
-      }
-
-      #video,
-      #overlay {
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: fill;
-      }
-
-      #overlay {
-        pointer-events: none;
-      }
-
-      @media (max-width: 700px) {
-        .camera-frame {
-          width: min(52vw, 280px);
-        }
-      }
-    </style>
+    <title>Portal de Dominios ECON</title>
+    <meta
+      name="description"
+      content="Reconhecimento de sinais de mao em tempo real com interface em portugues, visual inspirado na ECON e monitoramento detalhado das deteccoes."
+    />
+    <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
     <div id="bg3d" aria-hidden="true"></div>
+    <div class="scene-wash" aria-hidden="true"></div>
 
-    <main class="app">
-      <h2>Jujutsu Kaisen Hands</h2>
-      <p id="status">Status: starting...</p>
+    <main class="site-shell">
+      <header class="topbar">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true">EC</div>
+          <div class="brand-copy">
+            <strong>Portal de Dominios ECON</strong>
+            <span>Visao operacional para deteccao de gestos com resposta 3D em tempo real.</span>
+          </div>
+        </div>
+
+        <nav class="topbar-nav" aria-label="Navegacao principal">
+          <a class="nav-link" href="#inicio">Inicio</a>
+          <a class="nav-link" href="#monitoramento">Monitoramento</a>
+          <a class="nav-link" href="#sinais">Sinais</a>
+          <a class="button-link secondary" href="./train.html">Abrir treinador</a>
+        </nav>
+      </header>
+
+      <section class="hero" id="inicio">
+        <article class="hero-card">
+          <div class="hero-copy">
+            <span class="hero-tag">Layout inspirado na ECON</span>
+            <h1>Reconhecimento de gestos com leitura clara, status operacional e foco em decisao.</h1>
+            <p>
+              O projeto foi traduzido para portugues e ganhou uma camada de interface mais
+              corporativa para acompanhamento de sessoes, confianca por classe e historico de
+              deteccoes. O motor de inferencia continua o mesmo, mas a experiencia agora esta
+              pronta para demonstracao, coleta e validacao ao vivo.
+            </p>
+
+            <div class="hero-actions">
+              <a class="button-link primary" href="#monitoramento">Ver monitoramento</a>
+              <a class="button-link secondary" href="./train.html">Treinar novo modelo</a>
+            </div>
+
+            <div class="feature-strip" aria-label="Destaques do portal">
+              <article class="feature-chip">
+                <strong>Barras de confianca</strong>
+                <span>Visualize a probabilidade de cada gesto a cada quadro inferido.</span>
+              </article>
+              <article class="feature-chip">
+                <strong>Historico recente</strong>
+                <span>Registre ativacoes confirmadas com horario e precisao da sessao.</span>
+              </article>
+              <article class="feature-chip">
+                <strong>Controles de camera</strong>
+                <span>Espelhamento, pontos rastreados e limpeza de monitoramento sem reiniciar a pagina.</span>
+              </article>
+            </div>
+          </div>
+        </article>
+
+        <div class="dashboard-stack">
+          <section class="camera-card" id="monitoramento">
+            <div class="camera-top">
+              <div>
+                <h2>Monitor de deteccao</h2>
+              </div>
+              <div class="status-pill" id="statusBadge" data-tone="neutral">
+                <span id="statusText">Inicializando modulo de visao...</span>
+              </div>
+            </div>
+
+            <div class="camera-frame is-mirrored" id="cameraFrame">
+              <video id="video" autoplay playsinline muted></video>
+              <canvas id="overlay" width="640" height="480"></canvas>
+            </div>
+
+            <div class="camera-toolbar">
+              <button class="button-action secondary" id="mirrorToggle" type="button" aria-pressed="true">
+                Desespelhar camera
+              </button>
+              <button class="button-action secondary" id="landmarksToggle" type="button" aria-pressed="true">
+                Ocultar pontos
+              </button>
+              <button class="button-action secondary" id="historyToggle" type="button" aria-pressed="true">
+                Pausar historico
+              </button>
+              <button class="button-action secondary" id="resetMonitor" type="button">
+                Limpar monitoramento
+              </button>
+            </div>
+
+            <div class="camera-summary">
+              <article class="mini-stat">
+                <span>Maos visiveis</span>
+                <strong id="handsVisible">0</strong>
+              </article>
+              <article class="mini-stat">
+                <span>Modo da camera</span>
+                <strong id="cameraMode">Espelhada</strong>
+              </article>
+              <article class="mini-stat">
+                <span>Tempo de sessao</span>
+                <strong id="sessionClock">00:00</strong>
+              </article>
+            </div>
+          </section>
+
+          <section class="panel">
+            <h3>Sinal em foco</h3>
+            <div class="current-signal">
+              <div>
+                <strong id="activeSignal">Aguardando gesto</strong>
+                <span id="activeSignalSubtitle">Posicione as duas maos dentro do quadro para iniciar.</span>
+              </div>
+              <div class="badge-accent" id="activeSignalBadge">Pronto</div>
+            </div>
+
+            <div class="metric-grid">
+              <article class="metric-box">
+                <span>Ultimo gesto confirmado</span>
+                <strong id="lastDetected">Nenhum</strong>
+              </article>
+              <article class="metric-box">
+                <span>Precisao do ultimo gesto</span>
+                <strong id="lastConfidence">0.000</strong>
+              </article>
+              <article class="metric-box">
+                <span>Ativacoes na sessao</span>
+                <strong id="totalDetections">0</strong>
+              </article>
+              <article class="metric-box">
+                <span>Estado do fundo 3D</span>
+                <strong id="sceneState">Em espera</strong>
+              </article>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-heading">
+          <div>
+            <h2>Monitoramento detalhado</h2>
+            <p>
+              O painel abaixo exibe as classes do modelo e o comportamento recente da sessao para
+              facilitar leitura operacional e depuracao durante demos ou retreinamentos.
+            </p>
+          </div>
+        </div>
+
+        <div class="panel-grid">
+          <article class="panel">
+            <h3>Confianca por classe</h3>
+            <div class="confidence-list" id="confidenceList"></div>
+          </article>
+
+          <article class="panel">
+            <h3>Historico recente</h3>
+            <div class="history-list" id="historyList"></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" id="sinais">
+        <div class="section-heading">
+          <div>
+            <h2>Painel por sinal</h2>
+            <p>
+              Cada card resume a funcao do gesto, o perfil visual da animacao e quantas vezes ele
+              foi ativado na sessao atual.
+            </p>
+          </div>
+        </div>
+
+        <div class="signal-grid" id="signalGrid"></div>
+      </section>
+
+      <section class="section">
+        <div class="section-heading">
+          <div>
+            <h2>Fluxo recomendado</h2>
+            <p>
+              A leitura fica mais estavel quando a camera esta apoiada, as maos ficam inteiras no
+              quadro e o operador respeita uma pequena pausa entre um gesto e outro.
+            </p>
+          </div>
+        </div>
+
+        <div class="guide-grid">
+          <article class="guide-card">
+            <small>01. Posicionamento</small>
+            <strong>Centralize o enquadramento</strong>
+            <p>Mantenha os punhos visiveis e evite contraluz para nao perder os pontos rastreados.</p>
+          </article>
+          <article class="guide-card">
+            <small>02. Consistencia</small>
+            <strong>Segure o gesto por alguns quadros</strong>
+            <p>O classificador usa persistencia para reduzir ruido e evitar trocas bruscas.</p>
+          </article>
+          <article class="guide-card">
+            <small>03. Validacao</small>
+            <strong>Compare barras e historico</strong>
+            <p>Use as probabilidades para entender se o problema esta no gesto ou no dataset.</p>
+          </article>
+          <article class="guide-card">
+            <small>04. Iteracao</small>
+            <strong>Retreine quando houver desequilibrio</strong>
+            <p>O treinador agora mostra meta por classe e facilita limpar dados ruins antes de salvar.</p>
+          </article>
+        </div>
+
+        <p class="footer-note">
+          Referencia visual baseada na linguagem do site institucional da ECON, adaptada para este
+          painel interativo.
+        </p>
+      </section>
     </main>
-
-    <div class="camera-frame">
-      <video id="video" autoplay playsinline></video>
-      <canvas id="overlay" width="640" height="480"></canvas>
-    </div>
 
     <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
     <script src="https://unpkg.com/three@0.160.0/examples/js/controls/OrbitControls.js"></script>
@@ -99,6 +236,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
+    <script src="./sign-config.js"></script>
     <script src="./background-scene.js"></script>
     <script src="./hand-features.js"></script>
     <script src="./app.js"></script>
