@@ -1,6 +1,6 @@
 # ENCOM Gesture Console
 
-Aplicacao web para reconhecimento de sinais de mao inspirados em *Jujutsu Kaisen*, com deteccao em tempo real pela webcam, animacoes 3D e interface futurista no padrao ENCOM.
+Aplicacao web para reconhecimento de sinais de mao com deteccao em tempo real pela webcam, treinamento no navegador, animacoes 3D e interface futurista no padrao ENCOM.
 
 ## O que mudou
 
@@ -18,7 +18,7 @@ Aplicacao web para reconhecimento de sinais de mao inspirados em *Jujutsu Kaisen
   - previsao ao vivo por classe
   - reset da classe selecionada
   - limpeza completa da base antes de novo treino
-- Configuracao compartilhada dos sinais em `sign-config.js`.
+- Configuracao compartilhada das classes, descricoes e metadados visuais em `sign-config.js`.
 
 ## Tecnologias
 
@@ -48,7 +48,7 @@ Aplicacao web para reconhecimento de sinais de mao inspirados em *Jujutsu Kaisen
 2. Abra `index.html` para usar o monitor principal.
 3. Permita acesso a webcam.
 4. Execute os gestos com as duas maos visiveis no quadro.
-5. Acompanhe barras de confianca, historico e sinal ativo.
+5. Acompanhe barras de confianca, historico, telemetria e o cenario 3D ativado.
 
 ## Como treinar um novo modelo
 
@@ -60,6 +60,8 @@ Aplicacao web para reconhecimento de sinais de mao inspirados em *Jujutsu Kaisen
 6. Use **Iniciar previsao** para validar o resultado ao vivo.
 7. Clique em **Salvar modelo** para baixar os arquivos TensorFlow.js.
 8. Substitua `hand-sign-model.json` e `hand-sign-model.weights.bin` na raiz pelos arquivos aprovados.
+
+As classes padrao podem ser renomeadas ou substituidas diretamente em `sign-config.js`, sem alterar a estrutura principal da interface.
 
 ## Observacao
 
