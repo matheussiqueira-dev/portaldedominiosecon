@@ -1,0 +1,22 @@
+{
+  "name": "portal-econ",
+  "version": "2.0.0",
+  "description": "Sistema de reconhecimento de gestos em tempo real com TensorFlow.js, MediaPipe Hands e Three.js.",
+  "author": "Matheus Siqueira <https://www.matheussiqueira.dev/>",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "test": "jest --testPathPattern=tests/",
+    "test:coverage": "jest --coverage --testPathPattern=tests/",
+    "test:watch": "jest --watch --testPathPattern=tests/"
+  },
+  "devDependencies": {
+    "jest": "^29.0.0",
+    "jsdom": "^24.0.0"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": ["**/tests/**/*.test.js"],
+    "verbose": true
+  }
+}
